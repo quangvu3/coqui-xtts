@@ -1,5 +1,0 @@
-git+https://github.com/Hasan-Naseer/whisperX.git@release/latest-faster-whisper-version
-gradio==4.31
-fastapi==0.112.2
-ctranslate2==4.4.0
-torchaudio==2.6.0
