@@ -8,6 +8,7 @@ torchaudio
 soundfile>=0.12.0
 librosa>=0.10.0
 fsspec>=2023.6.0 # <= 2023.9.1 makes aux tests fail
+packaging>=23.1
 transformers>=4.33.0
 # coqui stack
 trainer>=0.0.32
