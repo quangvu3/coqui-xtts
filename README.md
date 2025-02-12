@@ -35,11 +35,11 @@ pip install -e .[all,dev,notebooks]  # Select the relevant extras
 import os
 import torch
 import torchaudio
-from huggingface_hub import hf_hub_download
+from huggingface_hub import snapshot_download
 from TTS.tts.models.xtts import Xtts
 from TTS.tts.configs.xtts_config import XttsConfig
 
-# load config and model
+# load configs and model
 checkpoint_dir="/path/to/local/checkpoint_dir/"
 os.makedirs(checkpoint_dir, exist_ok=True)
 repo_id = "jimmyvu/xtts"
@@ -52,8 +52,8 @@ config.load_json(os.path.join(checkpoint_dir, "config.json"))
 xtts_model = Xtts.init_from_config(config)
 xtts_model.load_safetensors_checkpoint(config, checkpoint_dir=checkpoint_dir)
 
-# voice clone setup
-speaker_audio_file = '/path/to/sample/audio/sample.wav' # sample audio (to clone voice from)
+# reference speaker setup
+speaker_audio_file = "/path/to/sample/audio/sample.wav" # sample audio
 gpt_cond_latent, speaker_embedding = xtts_model.get_conditioning_latents(
 	audio_path=speaker_audio_file,
 	gpt_cond_len=xtts_model.config.gpt_cond_len,
@@ -64,7 +64,6 @@ gpt_cond_latent, speaker_embedding = xtts_model.get_conditioning_latents(
 # inference
 text = "Good morning everyone. I'm an AI model. I can read text and generate speech with a given voice."
 language = "en"
-
 out = xtts_model.inference(
 	text=text,
 	language=language,
@@ -72,6 +71,8 @@ out = xtts_model.inference(
 	speaker_embedding=speaker_embedding,
 	enable_text_splitting=True,
 )
+
+# save output to wav file
 out["wav"] = torch.tensor(out["wav"]).unsqueeze(0)
 torchaudio.save("speech.wav", out["wav"], 24000)
 ```
