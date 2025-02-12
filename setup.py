@@ -69,7 +69,7 @@ exts = [
     )
 ]
 setup(
-    name="TTS",
+    name="Coqui-XTTS",
     version=version,
     url="https://github.com/quangvu3/coqui-xtts",
     author="Quang Vu",
@@ -92,7 +92,7 @@ setup(
     },
     project_urls={
         "Documentation": "https://github.com/coqui-ai/TTS/wiki",
-        "Repository": "https://github.com/coqui-xtts/TTS",
+        "Repository": "https://github.com/quangvu3/coqui-xtts",
     },
     cmdclass={
         "build_py": build_py,
