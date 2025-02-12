@@ -55,17 +55,9 @@ package_data = []
 
 
 def pip_install(package_name):
-    subprocess.call([sys.executable, "-m", "pip", "install", package_name])
-
+    subprocess.call([sys.executable, "-m", "pip", "install", "--use-deprecated=legacy-resolver", package_name])
 
 requirements = open(os.path.join(cwd, "requirements.txt"), "r").readlines()
-with open(os.path.join(cwd, "requirements.notebooks.txt"), "r") as f:
-    requirements_notebooks = f.readlines()
-with open(os.path.join(cwd, "requirements.dev.txt"), "r") as f:
-    requirements_dev = f.readlines()
-with open(os.path.join(cwd, "requirements.ja.txt"), "r") as f:
-    requirements_ja = f.readlines()
-requirements_all = requirements_dev + requirements_notebooks + requirements_ja
 
 with open("README.md", "r", encoding="utf-8") as readme_file:
     README = readme_file.read()
@@ -79,9 +71,9 @@ exts = [
 setup(
     name="TTS",
     version=version,
-    url="https://github.com/coqui-xtts/TTS",
-    author="Eren Gölge",
-    author_email="egolge@coqui.ai",
+    url="https://github.com/quangvu3/coqui-xtts",
+    author="Quang Vu",
+    author_email="jimmyvu@gmail.com",
     description="Coqui XTTS (only)",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -108,12 +100,6 @@ setup(
         # 'build_ext': build_ext
     },
     install_requires=requirements,
-    extras_require={
-        "all": requirements_all,
-        "dev": requirements_dev,
-        "notebooks": requirements_notebooks,
-        "ja": requirements_ja,
-    },
     python_requires=">=3.9.0, <3.12",
     classifiers=[
         "Programming Language :: Python",
