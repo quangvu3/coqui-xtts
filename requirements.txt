@@ -1,0 +1,30 @@
+# core deps
+numpy==1.22.0;python_version<="3.10"
+numpy>=1.24.3;python_version>"3.10"
+cython>=0.29.30
+scipy>=1.11.2
+torch>=2.1
+torchaudio
+soundfile>=0.12.0
+librosa>=0.10.0
+fsspec>=2023.6.0 # <= 2023.9.1 makes aux tests fail
+transformers>=4.33.0
+# coqui stack
+trainer>=0.0.32
+# config management
+coqpit>=0.0.16
+# chinese g2p deps
+pypinyin
+# korean
+hangul_romanize
+einops>=0.6.0
+# deps for XTTS
+unidecode>=1.3.2
+num2words
+spacy[ja]>=3
+# for runpod
+blinker==1.4
+# japanese g2p deps
+mecab-python3==1.0.6
+unidic-lite==1.0.8
+cutlet
