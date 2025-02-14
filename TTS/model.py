@@ -58,3 +58,18 @@ class BaseTrainerModel(TrainerModel):
             cache (bool, optional): If True, cache the file locally for subsequent calls. It is cached under `get_user_data_dir()/tts_cache`. Defaults to False.
         """
         ...
+
+    @abstractmethod
+    def load_checkpoint(
+        self, config: Coqpit, checkpoint_path: str, eval: bool = False, strict: bool = True, cache=False
+    ) -> None:
+        """Load a model checkpoint gile and get ready for training or inference.
+
+        Args:
+            config (Coqpit): Model configuration.
+            checkpoint_path (str): Path to the model checkpoint file.
+            eval (bool, optional): If true, init model for inference else for training. Defaults to False.
+            strict (bool, optional): Match all checkpoint keys to model's keys. Defaults to True.
+            cache (bool, optional): If True, cache the file locally for subsequent calls. It is cached under `get_user_data_dir()/tts_cache`. Defaults to False.
+        """
+        ...

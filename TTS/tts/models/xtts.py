@@ -779,6 +779,65 @@ class Xtts(BaseTTS):
             self.gpt.init_gpt_for_inference(kv_cache=self.args.kv_cache, use_deepspeed=use_deepspeed)
             self.gpt.eval()
 
+
+    def load_checkpoint(
+        self,
+        config,
+        checkpoint_dir=None,
+        checkpoint_path=None,
+        vocab_path=None,
+        eval=True,
+        strict=True,
+        use_deepspeed=False,
+        speaker_file_path=None,
+    ):
+        """
+        Loads a checkpoint from disk and initializes the model's state and tokenizer.
+
+        Args:
+            config (dict): The configuration dictionary for the model.
+            checkpoint_dir (str, optional): The directory where the checkpoint is stored. Defaults to None.
+            checkpoint_path (str, optional): The path to the checkpoint file. Defaults to None.
+            vocab_path (str, optional): The path to the vocabulary file. Defaults to None.
+            eval (bool, optional): Whether to set the model to evaluation mode. Defaults to True.
+            strict (bool, optional): Whether to strictly enforce that the keys in the checkpoint match the keys in the model. Defaults to True.
+
+        Returns:
+            None
+        """
+
+        model_path = checkpoint_path or os.path.join(checkpoint_dir, "model.pth")
+        vocab_path = vocab_path or os.path.join(checkpoint_dir, "vocab.json")
+
+        if speaker_file_path is None and checkpoint_dir is not None:
+            speaker_file_path = os.path.join(checkpoint_dir, "speakers_xtts.pth")
+
+        self.language_manager = LanguageManager(config)
+        self.speaker_manager = None
+        if speaker_file_path is not None and os.path.exists(speaker_file_path):
+            self.speaker_manager = SpeakerManager(speaker_file_path)
+
+        if os.path.exists(vocab_path):
+            self.tokenizer = VoiceBpeTokenizer(vocab_file=vocab_path)
+
+        self.init_models()
+
+        checkpoint = self.get_compatible_checkpoint_state_dict(model_path)
+
+        # deal with v1 and v1.1. V1 has the init_gpt_for_inference keys, v1.1 do not
+        try:
+            self.load_state_dict(checkpoint, strict=strict)
+        except:
+            if eval:
+                self.gpt.init_gpt_for_inference(kv_cache=self.args.kv_cache)
+            self.load_state_dict(checkpoint, strict=strict)
+
+        if eval:
+            self.hifigan_decoder.eval()
+            self.gpt.init_gpt_for_inference(kv_cache=self.args.kv_cache, use_deepspeed=use_deepspeed)
+            self.gpt.eval()
+
+
     def train_step(self):
         raise NotImplementedError(
             "XTTS has a dedicated trainer, please check the XTTS docs: https://tts.readthedocs.io/en/dev/models/xtts.html#training"
