@@ -38,31 +38,6 @@ def load_model(xtts_checkpoint, xtts_config, xtts_vocab):
     print("Model Loaded!")
     return "Model Loaded!"
 
-def run_tts(lang, tts_text, speaker_audio_file):
-    if XTTS_MODEL is None or not speaker_audio_file:
-        return "You need to run the previous step to load the model !!", None, None
-
-    gpt_cond_latent, speaker_embedding = XTTS_MODEL.get_conditioning_latents(audio_path=speaker_audio_file, gpt_cond_len=XTTS_MODEL.config.gpt_cond_len, max_ref_length=XTTS_MODEL.config.max_ref_len, sound_norm_refs=XTTS_MODEL.config.sound_norm_refs)
-    out = XTTS_MODEL.inference(
-        text=tts_text,
-        language=lang,
-        gpt_cond_latent=gpt_cond_latent,
-        speaker_embedding=speaker_embedding,
-        temperature=XTTS_MODEL.config.temperature, # Add custom parameters here
-        length_penalty=XTTS_MODEL.config.length_penalty,
-        repetition_penalty=XTTS_MODEL.config.repetition_penalty,
-        top_k=XTTS_MODEL.config.top_k,
-        top_p=XTTS_MODEL.config.top_p,
-    )
-
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as fp:
-        out["wav"] = torch.tensor(out["wav"]).unsqueeze(0)
-        out_path = fp.name
-        torchaudio.save(out_path, out["wav"], 24000)
-
-    return "Speech generated !", out_path, speaker_audio_file
-
-
 def train_model(language, train_csv, eval_csv, output_path, num_epochs, batch_size, grad_acumm, max_audio_length):
     clear_gpu_cache()
     if not train_csv or not eval_csv:
