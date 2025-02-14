@@ -29,7 +29,9 @@ pip install -e .[all,dev,notebooks]  # Select the relevant extras
 
 ### 🐍 Python
 
-#### Running a multi-lingual model
+#### Running multi-lingual XTTS model
+
+Synthesize speech with a built-in speaker's voice
 
 ```python
 import os
@@ -52,8 +54,25 @@ config.load_json(os.path.join(checkpoint_dir, "config.json"))
 xtts_model = Xtts.init_from_config(config)
 xtts_model.load_safetensors_checkpoint(config, checkpoint_dir=checkpoint_dir)
 
+text = "Good morning everyone. I'm an AI model. I can read text and generate speech with a given voice."
+language = "en"
+
+# synthesize with speaker id
+out = xtts_model.synthesize(text=text, 
+			config=xtts_model.config, 
+			speaker_wav=None, 
+			language=language, 
+			speaker_id="Ana Florence")
+
+# save output to wav file
+out["wav"] = torch.tensor(out["wav"]).unsqueeze(0)
+torchaudio.save("speech.wav", out["wav"], 24000)
+```
+
+or use a reference speaker (voice cloning)
+```python
 # reference speaker setup
-speaker_audio_file = "/path/to/sample/audio/sample.wav" # sample audio
+speaker_audio_file = "/path/to/sample/audio/sample.wav"
 gpt_cond_latent, speaker_embedding = xtts_model.get_conditioning_latents(
 	audio_path=speaker_audio_file,
 	gpt_cond_len=xtts_model.config.gpt_cond_len,
@@ -62,8 +81,6 @@ gpt_cond_latent, speaker_embedding = xtts_model.get_conditioning_latents(
 )
 
 # inference
-text = "Good morning everyone. I'm an AI model. I can read text and generate speech with a given voice."
-language = "en"
 out = xtts_model.inference(
 	text=text,
 	language=language,
@@ -76,6 +93,7 @@ out = xtts_model.inference(
 out["wav"] = torch.tensor(out["wav"]).unsqueeze(0)
 torchaudio.save("speech.wav", out["wav"], 24000)
 ```
+
 
 ## Directory Structure
 ```
