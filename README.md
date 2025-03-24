@@ -22,7 +22,7 @@ Clone 🐸XTTS and install it locally.
 
 ```bash
 git clone https://github.com/quangvu3/coqui-xtts
-pip install -e .[all,dev,notebooks]  # Select the relevant extras
+pip install -e .
 ```
 
 ## Synthesizing speech by 🐸XTTS
