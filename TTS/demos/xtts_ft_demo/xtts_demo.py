@@ -190,7 +190,8 @@ if __name__ == "__main__":
                     "zh",
                     "hu",
                     "ko",
-                    "ja"
+                    "ja",
+                    "vi"
                 ],
             )
             progress_data = gr.Label(

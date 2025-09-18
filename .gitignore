@@ -171,3 +171,6 @@ coqui_recipes/*
 local_scripts/*
 coqui_demos/*
 TTS/demos/xtts_oai_server/cache
+
+#Gradio
+**/.gradio
