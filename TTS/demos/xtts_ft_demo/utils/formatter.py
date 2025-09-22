@@ -223,11 +223,7 @@ def format_audio_list(audio_files, target_language="en", out_path=None, buffer=0
     # Loading Whisper
     device = "cuda" if torch.cuda.is_available() else "cpu" 
 
-    print(f"Loading Whisper Model! Creating {max_duration}s chunks with breaking rules:")
-    print(f"1. Punctuation marks (. ! ?) - highest priority")
-    print(f"2. Commas (,) - second priority") 
-    print(f"3. 250 characters (whole words) - third priority")
-    print(f"4. {max_duration}s maximum duration - hard limit")
+    print(f"Loading Whisper Model!)
     asr_model = WhisperModel("large-v2", device=device, compute_type="float16")
 
     metadata = {"audio_file": [], "text": [], "speaker_name": []}
@@ -421,11 +417,6 @@ def format_audio_list(audio_files, target_language="en", out_path=None, buffer=0
     print(f"\n=== Audio Segmentation Results ===")
     print(f"Total segments created: {len(metadata['audio_file'])}")
     print(f"Promotional segments filtered: {filtered_count}")
-    print(f"Chunk breaking rules applied:")
-    print(f"  1. Punctuation marks (. ! ?) - highest priority")
-    print(f"  2. Commas (,) - second priority")
-    print(f"  3. 250 characters (whole words) - third priority")
-    print(f"  4. {max_duration}s maximum duration - hard limit")
     print(f"All segments processed successfully!\n")
 
     df = pandas.DataFrame(metadata)
