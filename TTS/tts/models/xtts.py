@@ -711,7 +711,8 @@ class Xtts(BaseTTS):
         self.gpt.init_gpt_for_inference()
         super().eval()
 
-    def get_compatible_checkpoint_state_dict(self, checkpoint):
+    def get_compatible_checkpoint_state_dict(self, model_path):
+        checkpoint = load_fsspec(model_path, map_location=torch.device("cpu"))["model"]
         # remove xtts gpt trainer extra keys
         ignore_keys = ["torch_mel_spectrogram_style_encoder", "torch_mel_spectrogram_dvae", "dvae"]
         for key in list(checkpoint.keys()):
@@ -727,6 +728,39 @@ class Xtts(BaseTTS):
                 del checkpoint[key]
 
         return checkpoint
+
+
+    def load_checkpoint(
+        self,
+        config,
+        checkpoint_dir=None,
+        checkpoint_path=None,
+        vocab_path=None,
+        eval=True,
+        strict=True,
+        use_deepspeed=False,
+        speaker_file_path=None,
+    ):
+        model_safetensors_path = os.path.join(checkpoint_dir, "model.safetensors")
+        if os.path.exists(model_safetensors_path):
+            self.load_safetensors_checkpoint(
+                config,
+                checkpoint_dir,
+                eval=eval,
+                strict=strict,
+                use_deepspeed=use_deepspeed,
+            )
+        else:
+            self.load_legacy_checkpoint(
+                config,
+                checkpoint_dir=checkpoint_dir,
+                checkpoint_path=checkpoint_path,
+                vocab_path=vocab_path,
+                eval=eval,
+                strict=strict,
+                use_deepspeed=use_deepspeed,
+                speaker_file_path=speaker_file_path,
+            )
 
 
     def load_safetensors_checkpoint(
@@ -764,7 +798,7 @@ class Xtts(BaseTTS):
 
         self.init_models()
 
-        checkpoint = self.get_compatible_checkpoint_state_dict(load_file(model_safetensors_path))
+        checkpoint = load_file(model_safetensors_path)
 
         # deal with v1 and v1.1. V1 has the init_gpt_for_inference keys, v1.1 do not
         try:
@@ -780,7 +814,7 @@ class Xtts(BaseTTS):
             self.gpt.eval()
 
 
-    def load_checkpoint(
+    def load_legacy_checkpoint(
         self,
         config,
         checkpoint_dir=None,
