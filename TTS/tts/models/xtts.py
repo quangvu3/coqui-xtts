@@ -711,8 +711,7 @@ class Xtts(BaseTTS):
         self.gpt.init_gpt_for_inference()
         super().eval()
 
-    def get_compatible_checkpoint_state_dict(self, model_path):
-        checkpoint = load_fsspec(model_path, map_location=torch.device("cpu"))["model"]
+    def get_compatible_checkpoint_state_dict(self, checkpoint):
         # remove xtts gpt trainer extra keys
         ignore_keys = ["torch_mel_spectrogram_style_encoder", "torch_mel_spectrogram_dvae", "dvae"]
         for key in list(checkpoint.keys()):
@@ -798,7 +797,7 @@ class Xtts(BaseTTS):
 
         self.init_models()
 
-        checkpoint = load_file(model_safetensors_path)
+        checkpoint = self.get_compatible_checkpoint_state_dict(load_file(model_safetensors_path))
 
         # deal with v1 and v1.1. V1 has the init_gpt_for_inference keys, v1.1 do not
         try:
@@ -856,7 +855,8 @@ class Xtts(BaseTTS):
 
         self.init_models()
 
-        checkpoint = self.get_compatible_checkpoint_state_dict(model_path)
+        _checkpoint = load_fsspec(model_path, map_location=torch.device("cpu"))
+        checkpoint = self.get_compatible_checkpoint_state_dict(_checkpoint["model"])
 
         # deal with v1 and v1.1. V1 has the init_gpt_for_inference keys, v1.1 do not
         try:
